@@ -8,7 +8,7 @@
 %%-behaviour(application).
 
 %% Application callbacks
--export([arabic_to_roman/1,format_input/1]).
+-export([arabic_to_roman/1,format_input/1,roman_to_arab/1]).
 
 %%====================================================================
 %% API
@@ -69,7 +69,7 @@ convert(Number,List)->
             convert(Number - 10,List ++ "X");
         Number when (Number - 9) >= 0 ->
             convert(Number - 9,List ++ "IX");
-         Number when (Number - 5) >= 0 ->
+        Number when (Number - 5) >= 0 ->
             convert(Number - 5,List ++ "V");
         Number when (Number - 4) >= 0 ->
             convert(Number - 4,List ++ "IV");
@@ -78,3 +78,78 @@ convert(Number,List)->
         _ ->
             List
     end.
+
+
+roman_to_arab(Number)->
+    convert_to_arab(Number,0).
+
+
+convert_to_arab([],Result)->
+    Result;
+convert_to_arab([H|[]],Result)->
+    convert_normal(H,Result);
+convert_to_arab([H|T],Result) ->
+    Next_element = [lists:nth(1,T)],
+    Value = case [H]++ Next_element of
+                "CM" ->
+                    Converted_value = convert_exeption("CM",Result),
+                    {[H|T] -- "CM",Converted_value};
+                "CD" ->
+                    Converted_value =convert_exeption("CD",Result),
+                    {[H|T] -- "CD",Converted_value};
+                "XC" ->
+                    Converted_value = convert_exeption("XC",Result),
+                    {[H|T] -- "XC",Converted_value};
+                "XL" ->
+                    Converted_value = convert_exeption("XL",Result),
+                    {[H|T] -- "XL",Converted_value};
+                "IX" ->
+                    Converted_value =  convert_exeption("IX",Result),
+                    {[H|T] -- "IX",Converted_value};
+                "IV" ->
+                    Converted_value =  convert_exeption("IV",Result),
+                    {[H|T] -- "IV",Converted_value};
+                _ ->
+                    Converted_value =  convert_normal(H,Result),
+                    {T,Converted_value}
+            end,
+    {List,V} = Value,
+    convert_to_arab(List,V).
+                
+convert_normal(Number,Result)->    
+    case [Number] of
+        "M" ->
+            Result + 1000;
+        "D" ->
+            Result + 500;
+        "C" ->
+            Result + 100;
+        "L" ->
+            Result + 50;
+        "X" ->
+            Result + 10;
+        "V" ->
+            Result + 5;
+        "I" ->
+            Result + 1
+    end.
+
+convert_exeption(Number,Result)->
+    case Number of
+        "CM" ->
+            Result + 900;
+        "CD" ->
+            Result + 400;
+        "XC" ->
+            Result + 90;
+        "XL" ->
+            Result + 40;
+        "IX" ->
+            Result + 9;
+        "IV" ->
+            Result + 4;
+        _ ->
+            io:format("Invalid character : ~p~n,",[Number]),
+            Result                
+    end.
+    
