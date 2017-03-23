@@ -81,7 +81,14 @@ convert(Number,List)->
 
 
 roman_to_arab(Number)->
-    convert_to_arab(Number,0).
+    Result = check_syntax(Number,[]),
+    case lists:keyfind(error,1,Result) of
+        false ->
+            convert_to_arab(Number,0);        
+        Tuple ->
+            io:format("Invalid character(s) in roman number : ~p~n",[Tuple]),
+            Result
+    end.
 
 
 convert_to_arab([],Result)->
@@ -152,4 +159,18 @@ convert_exeption(Number,Result)->
             io:format("Invalid character : ~p~n,",[Number]),
             Result                
     end.
+
+check_syntax([],List) ->
+    lists:flatten(List);
+check_syntax([H|T],List)->
+    Valid_characters = ["M","D","C","L","X","V","I"],
+    Result =   case lists:member([H],Valid_characters) of
+                   true ->
+                       {ok,[H]};
+                   false ->
+                       {error,[H]}
+               end,
+    check_syntax(T,List ++ [Result]).
+
+
     

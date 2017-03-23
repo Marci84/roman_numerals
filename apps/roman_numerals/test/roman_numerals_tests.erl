@@ -66,3 +66,6 @@ convert_roman_to_arab_test()->
     Result4 = roman_numerals_app:arabic_to_roman(roman_numerals_app:roman_to_arab("MCMLXXXIV")),
     ?assertEqual("MCMLXXXIV",Result4).
 
+syntax_check_test()->
+    Result = roman_numerals_app:roman_to_arab("Q"),
+    ?assertEqual([{error,"Q"}],Result).
