@@ -69,3 +69,30 @@ convert_roman_to_arab_test()->
 syntax_check_test()->
     Result = roman_numerals_app:roman_to_arab("Q"),
     ?assertEqual([{error,"Q"}],Result).
+
+
+convert_roman_to_arab2_test()->
+    Result = roman_numerals_app:roman_to_arab2("I"),
+    ?assertEqual(1,Result),
+    Result2 = roman_numerals_app:roman_to_arab2("II"),
+    ?assertEqual(2,Result2),
+     Result3 = roman_numerals_app:roman_to_arab2("III"),
+    ?assertEqual(3,Result3),
+     Result4 = roman_numerals_app:roman_to_arab2("IV"),
+    ?assertEqual(4,Result4),
+     Result5 = roman_numerals_app:roman_to_arab2("VIII"),
+    ?assertEqual(8,Result5),
+     Result6 = roman_numerals_app:roman_to_arab2("IX"),
+    ?assertEqual(9,Result6),
+     Result7 = roman_numerals_app:roman_to_arab2("X"),
+    ?assertEqual(10,Result7),
+     Result8 = roman_numerals_app:roman_to_arab2("XV"),
+    ?assertEqual(15,Result8),
+     Result9 = roman_numerals_app:roman_to_arab2("XLIX"),
+    ?assertEqual(49,Result9),
+     Result10 = roman_numerals_app:roman_to_arab2("CMXCIX"),
+    ?assertEqual(999,Result10),
+     Result11 = roman_numerals_app:roman_to_arab2("MCMLXXXIV"),
+    ?assertEqual(1984,Result11),
+     Result12 = roman_numerals_app:roman_to_arab2("MMXVII"),
+    ?assertEqual(2017,Result12).

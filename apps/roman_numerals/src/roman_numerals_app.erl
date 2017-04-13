@@ -8,7 +8,7 @@
 %%-behaviour(application).
 
 %% Application callbacks
--export([arabic_to_roman/1,format_input/1,roman_to_arab/1]).
+-export([arabic_to_roman/1,format_input/1,roman_to_arab/1,roman_to_arab2/1]).
 
 %%====================================================================
 %% API
@@ -93,7 +93,7 @@ roman_to_arab(Number)->
 
 convert_to_arab([],Result)->
     Result;
-convert_to_arab([H|[]],Result)->
+convert_to_arab([H],Result)->
     convert_normal(H,Result);
 convert_to_arab([H|T],Result) ->
     Next_element = [lists:nth(1,T)],
@@ -173,4 +173,47 @@ check_syntax([H|T],List)->
     check_syntax(T,List ++ [Result]).
 
 
-    
+roman_to_arab2(Number)->
+    Result = check_syntax(Number,[]),
+    case lists:keyfind(error,1,Result) of
+        false ->
+            convert_to_arab2(Number,0);        
+        Tuple ->
+            io:format("Invalid character(s) in roman number : ~p~n",[Tuple]),
+            Result
+    end.
+
+
+convert_to_arab2([],Result)->
+    Result;
+convert_to_arab2([H],Result)->
+    Result + convert_normal2(H);
+convert_to_arab2([H,H2|T],Result)->
+    First = convert_normal2(H),
+    Second = convert_normal2(H2),
+    case First >= Second of
+                       true ->
+            convert_to_arab2([H2|T], Result + First);
+                       false ->
+            convert_to_arab2(T,Result - First + Second)
+    end.
+
+
+
+convert_normal2(Number)->    
+    case [Number] of
+        "M" ->
+            1000;
+        "D" ->
+            500;
+        "C" ->
+            100;
+        "L" ->
+            50;
+        "X" ->
+            10;
+        "V" ->
+            5;
+        "I" ->
+            1
+    end.
