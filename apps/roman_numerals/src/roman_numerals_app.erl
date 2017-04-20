@@ -8,7 +8,7 @@
 %%-behaviour(application).
 
 %% Application callbacks
--export([arabic_to_roman/1,format_input/1,roman_to_arab/1,roman_to_arab2/1]).
+-export([arabic_to_roman/1,format_input/1,roman_to_arab/1]).
 
 %%====================================================================
 %% API
@@ -27,10 +27,10 @@
 
 
 arabic_to_roman(Number)->
-    List_Number = format_input(Number),
-    case List_Number < 5000 of
+    Int_Number = format_input(Number),
+    case Int_Number < 5000 of
         true ->
-            convert(List_Number,[]);
+            convert(Int_Number,[]);
         false ->
             io:format("The provided number is too high to convert~n")
     end.
@@ -79,7 +79,6 @@ convert(Number,List)->
             List
     end.
 
-
 roman_to_arab(Number)->
     Result = check_syntax(Number,[]),
     case lists:keyfind(error,1,Result) of
@@ -90,81 +89,11 @@ roman_to_arab(Number)->
             Result
     end.
 
-
-convert_to_arab([],Result)->
-    Result;
-convert_to_arab([H],Result)->
-    convert_normal(H,Result);
-convert_to_arab([H|T],Result) ->
-    Next_element = [lists:nth(1,T)],
-    Value = case [H]++ Next_element of
-                "CM" ->
-                    Converted_value = convert_exeption("CM",Result),
-                    {[H|T] -- "CM",Converted_value};
-                "CD" ->
-                    Converted_value =convert_exeption("CD",Result),
-                    {[H|T] -- "CD",Converted_value};
-                "XC" ->
-                    Converted_value = convert_exeption("XC",Result),
-                    {[H|T] -- "XC",Converted_value};
-                "XL" ->
-                    Converted_value = convert_exeption("XL",Result),
-                    {[H|T] -- "XL",Converted_value};
-                "IX" ->
-                    Converted_value =  convert_exeption("IX",Result),
-                    {[H|T] -- "IX",Converted_value};
-                "IV" ->
-                    Converted_value =  convert_exeption("IV",Result),
-                    {[H|T] -- "IV",Converted_value};
-                _ ->
-                    Converted_value =  convert_normal(H,Result),
-                    {T,Converted_value}
-            end,
-    {List,V} = Value,
-    convert_to_arab(List,V).
-                
-convert_normal(Number,Result)->    
-    case [Number] of
-        "M" ->
-            Result + 1000;
-        "D" ->
-            Result + 500;
-        "C" ->
-            Result + 100;
-        "L" ->
-            Result + 50;
-        "X" ->
-            Result + 10;
-        "V" ->
-            Result + 5;
-        "I" ->
-            Result + 1
-    end.
-
-convert_exeption(Number,Result)->
-    case Number of
-        "CM" ->
-            Result + 900;
-        "CD" ->
-            Result + 400;
-        "XC" ->
-            Result + 90;
-        "XL" ->
-            Result + 40;
-        "IX" ->
-            Result + 9;
-        "IV" ->
-            Result + 4;
-        _ ->
-            io:format("Invalid character : ~p~n,",[Number]),
-            Result                
-    end.
-
 check_syntax([],List) ->
     lists:flatten(List);
 check_syntax([H|T],List)->
-    Valid_characters = ["M","D","C","L","X","V","I"],
-    Result =   case lists:member([H],Valid_characters) of
+    Valid_characters = "MDCLXVI",
+    Result =   case lists:member(H,Valid_characters) of
                    true ->
                        {ok,[H]};
                    false ->
@@ -173,34 +102,23 @@ check_syntax([H|T],List)->
     check_syntax(T,List ++ [Result]).
 
 
-roman_to_arab2(Number)->
-    Result = check_syntax(Number,[]),
-    case lists:keyfind(error,1,Result) of
-        false ->
-            convert_to_arab2(Number,0);        
-        Tuple ->
-            io:format("Invalid character(s) in roman number : ~p~n",[Tuple]),
-            Result
-    end.
-
-
-convert_to_arab2([],Result)->
+convert_to_arab([],Result)->
     Result;
-convert_to_arab2([H],Result)->
-    Result + convert_normal2(H);
-convert_to_arab2([H,H2|T],Result)->
-    First = convert_normal2(H),
-    Second = convert_normal2(H2),
+convert_to_arab([H],Result)->
+    Result + convert_normal(H);
+convert_to_arab([H,H2|T],Result)->
+    First = convert_normal(H),
+    Second = convert_normal(H2),
     case First >= Second of
                        true ->
-            convert_to_arab2([H2|T], Result + First);
+            convert_to_arab([H2|T], Result + First);
                        false ->
-            convert_to_arab2(T,Result - First + Second)
+            convert_to_arab(T,Result - First + Second)
     end.
 
 
 
-convert_normal2(Number)->    
+convert_normal(Number)->    
     case [Number] of
         "M" ->
             1000;
